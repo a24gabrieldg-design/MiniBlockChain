@@ -1,0 +1,3 @@
+Ana entrega 5 fichas a Luis
+Luis entrega 2 fichas a Marta
+Marta entrega 1 ficha a Ana
