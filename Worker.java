@@ -14,12 +14,12 @@ public class Worker {
 
         String prefijo = "0".repeat(dificultad);
 
-        // Reparto: el worker 0 prueba 0, 4, 8...; el 1 prueba 1, 5, 9...; etc.
+
         long nonce = id;
         while (true) {
             String hash = Hash.sha256(hashAnterior + "|" + datos + "|" + nonce);
             if (hash.startsWith(prefijo)) {
-                System.out.println(nonce + " " + hash); // lo que leerá el principal
+                System.out.println(nonce + " " + hash);
                 System.exit(0);
             }
             nonce += total;
