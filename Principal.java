@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Principal {
 
-    private static final int DIFICULTAD = 4;   // ceros que debe tener el hash al principio
+    private static final int DIFICULTAD = 4;
     private static final int NUM_WORKERS = 4;
 
     public static class Bloque {
@@ -32,7 +32,7 @@ public class Principal {
         System.out.print("Introduce la ruta del fichero: ");
         String ruta = sc.nextLine();
 
-        // Comprobaciones antes de lanzar ningún worker
+
         if (seed.trim().isEmpty()) {
             System.out.println("Error: la seed no puede estar vacía.");
             return;
@@ -46,7 +46,7 @@ public class Principal {
         try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
             String linea;
             while ((linea = br.readLine()) != null) {
-                if (!linea.trim().isEmpty()) {   // las líneas vacías se ignoran
+                if (!linea.trim().isEmpty()) {
                     lineas.add(linea);
                 }
             }
@@ -59,9 +59,9 @@ public class Principal {
             return;
         }
 
-        // Construcción de la cadena
+
         List<Bloque> cadena = new ArrayList<>();
-        String hashAnterior = Hash.sha256(seed);   // hash inicial (no necesita dificultad)
+        String hashAnterior = Hash.sha256(seed);
 
         try {
             for (int i = 0; i < lineas.size(); i++) {
@@ -80,7 +80,7 @@ public class Principal {
         System.out.println("Cadena completa: " + cadena.size() + " bloques.");
     }
 
-    // Lanza los 4 workers y devuelve el bloque cuando el primero encuentra una solución válida
+
     private static Bloque minar(int numero, String datos, String hashAnterior) throws Exception {
         List<Process> procesos = new ArrayList<>();
         List<BufferedReader> lectores = new ArrayList<>();
@@ -100,7 +100,6 @@ public class Principal {
                 lectores.add(new BufferedReader(new InputStreamReader(p.getInputStream())));
             }
 
-            // Preguntamos a cada worker por turnos, así no esperamos a uno concreto
             while (true) {
                 boolean algunoVivo = false;
                 for (int i = 0; i < NUM_WORKERS; i++) {
@@ -112,7 +111,7 @@ public class Principal {
                             String hashRecibido = partes[1];
                             try {
                                 long nonce = Long.parseLong(partes[0]);
-                                // El principal recalcula el hash por su cuenta
+
                                 String hashRecalculado = Hash.sha256(hashAnterior + "|" + datos + "|" + nonce);
                                 if (hashRecalculado.equals(hashRecibido) && hashRecalculado.startsWith(prefijo)) {
                                     System.out.println("BLOQUE " + numero + " VALIDADO");
@@ -129,7 +128,7 @@ public class Principal {
                                     return new Bloque(datos, hashAnterior, nonce, hashRecalculado);
                                 }
                             } catch (NumberFormatException e) {
-                                // nonce mal formado: se rechaza
+
                             }
                         }
                         System.out.println("Solución rechazada del worker " + i);
@@ -144,7 +143,7 @@ public class Principal {
                 Thread.sleep(10);
             }
         } finally {
-            // Termina los workers que sigan activos y espera a que acaben todos
+
             for (Process p : procesos) {
                 p.destroy();
             }
